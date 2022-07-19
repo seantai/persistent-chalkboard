@@ -1,0 +1,16 @@
+{
+  "name": "chalkboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "asb && near deploy contract.persistentchalkboard.testnet ./build/release/chalkboard.wasm -f"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "near-sdk-as": "^3.2.3"
+  }
+}
