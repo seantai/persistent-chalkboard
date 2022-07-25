@@ -5,7 +5,7 @@ import {parseNearAmount} from "near-api-js/lib/utils/format";
 const nearConfig = getConfig('development')
 
 const GAS = 100000000000000;
-const FEE = "0.1";
+const FEE = "1";
 
 
 export async function initContract() {
