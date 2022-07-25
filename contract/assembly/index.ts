@@ -1,23 +1,36 @@
-import { context, PersistentUnorderedMap } from "near-sdk-as";
+import { context, ContractPromiseBatch, u128 } from "near-sdk-as";
+import {listedNames, Name} from "./model";
 
-const namesMap = new PersistentUnorderedMap<string, string>("names")
-const names = new Array<string>();
-const contractOwner = 'persistentchalkboard.testnet'
+const names = new Array<Name>();
+
+const contractOwner = 'persistentchalkboard.testnet';
+const FEE = "0.1";
 
 ///////////////////////////////////////////
 
 /**
  * Function to add a sender/name pair to a persistent unordered map, and return map. 
- * @param name - user input name
+ * @param name - user input name object
  */
 
-export function addName(name: string): Array<string> {
+export function addName(name: Name): Array<Name> {
 
-  assert(name.length > 0, "name can't be blank");
-  assert(name.length < 14, "name must be less than 14 characters")
+  assert(name.text.length > 0, "name can't be blank");
+  assert(name.text.length < 14, "name must be less than 14 characters");
 
-  namesMap.set(context.sender, name)
-  
+  let storedName = listedNames.get(context.sender);
+  if (storedName !== null) {
+      throw new Error(`Name with the user id ${context.sender} already exists`);
+  }
+
+  if (u128.from(FEE).toString() != context.attachedDeposit.toString()) {
+      throw new Error("attached deposit should equal to the " +FEE+ " NEAR.");
+  }
+
+  ContractPromiseBatch.create(contractOwner).transfer(context.attachedDeposit);
+
+  listedNames.set(context.sender, Name.fromPayload(name));
+
   getNames()
 
   return names;
@@ -28,12 +41,12 @@ export function addName(name: string): Array<string> {
  * @returns an array of names
  */
 
-export function getNames(): Array<string> {
+export function getNames(): Array<Name> {
 
-  const accountIds = namesMap.keys();
+  const accountIds = listedNames.keys();
 
   accountIds.forEach(accountId => {
-    const value = namesMap.getSome(accountId)
+    const value = listedNames.getSome(accountId)
     names.push(value)
   })
   
@@ -47,7 +60,7 @@ export function getNames(): Array<string> {
 
  export function getAccountId(): Array<string>{
 
-  const accountIds = namesMap.keys();
+  const accountIds = listedNames.keys();
   
   return accountIds;
 }
@@ -60,6 +73,6 @@ export function getNames(): Array<string> {
 
   assert(contractOwner == context.sender, "can only be called by contractOwner");
 
-  namesMap.clear();
+  listedNames.clear();
 
 }
