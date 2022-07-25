@@ -35,9 +35,9 @@ export function Names({useNamesArray}) {
             fontSize={.012}
             textAlign={'center'}
             font={randomOption(fontArray)}
-            color={name.color}
+            color={'#F3F2F2'}
           >
-            {`${name.text} \nwas here`}
+            {`${name} \nwas here`}
           </Text>
         )
       })}
