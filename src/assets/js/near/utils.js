@@ -30,8 +30,12 @@ export function login() {
   window.walletConnection.requestSignIn(nearConfig.contractName)
 }
 
-export async function addName(name, color){
-  let response = await window.contract.addName({text: name, color: color}, GAS, parseNearAmount(FEE))
+export async function addName(text, color){
+  let name = {};
+  name.text = text;
+  name.color = color;
+
+  let response = await window.contract.addName({ name }, GAS, parseNearAmount(FEE))
   return response
 }
 
